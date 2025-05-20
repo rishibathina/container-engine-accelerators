@@ -185,7 +185,7 @@ func Test_checkDesired(t *testing.T) {
 		{name: "Multiple GPUs, first GPU matches, second does not", partitions: map[string][]string{"0": {"19", "19"}, "1": {"14"}}, desiredMaxCount: 2, want: false},
 		{name: "Multiple GPUs, first GPU does not match, second matches", partitions: map[string][]string{"0": {"19"}, "1": {"14", "14"}}, desiredMaxCount: 2, want: false},
 		{name: "Multiple GPUs, no counts match", partitions: map[string][]string{"0": {"19"}, "1": {"14"}}, desiredMaxCount: 2, want: false},
-		{name: "Partitions map has GPUs, but desired count is 0 (should be false as GPUs exist)", partitions: map[string][]string{"0": {}}, desiredMaxCount: 0, want: true}, 
+		{name: "Partitions map has GPUs, but desired count is 0 (should be false as GPUs exist)", partitions: map[string][]string{"0": {}}, desiredMaxCount: 0, want: true},
 		{name: "Partitions map has GPUs with items, desired count is 0", partitions: map[string][]string{"0": {"19"}}, desiredMaxCount: 0, want: false},
 	}
 	for _, tt := range tests {
