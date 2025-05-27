@@ -374,7 +374,6 @@ func parseLGIOutput(lgiOutput string) (map[string][]string, bool) {
 		if strings.Contains(line, "====") {
 			continue
 		}
-
 		if !strings.HasPrefix(line, "|") || !strings.HasSuffix(line, "|") {
 			continue
 		}
