@@ -347,7 +347,11 @@ func checkCurrentPartitionProfileCounts(desiredMaxCount int) bool {
 	}
 	glog.Infof("Output:\n %s", string(out))
 	outputText := string(out)
-	partitions, uniform := parseLGIOutput(outputText)
+	partitions, uniform, error := parseLGIOutput(outputText)
+	if error != nil {
+		glog.Errorf("failed to parse 'nvidia-smi mig -lgi' output: %v", error)
+		return false
+	}
 	if !uniform {
 		return uniform
 	}
@@ -357,11 +361,11 @@ func checkCurrentPartitionProfileCounts(desiredMaxCount int) bool {
 }
 
 // returns profile id map and if uniform
-func parseLGIOutput(lgiOutput string) (map[string][]string, bool) {
+func parseLGIOutput(lgiOutput string) (map[string][]string, bool, error) {
 	dataLineRegex, err := regexp.Compile(`^\s*(\d+)\s+(MIG\s+[\w\.]+)\s+(\d+)\s+(\d+)\s+([\d:]+)\s*$`)
 	if err != nil {
 		glog.Errorf("Internal error: failed to compile regex: %v", err)
-		return make(map[string][]string), false
+		return make(map[string][]string), false, err
 	}
 
 	gpuProfileIDsMap := make(map[string][]string)
@@ -374,7 +378,6 @@ func parseLGIOutput(lgiOutput string) (map[string][]string, bool) {
 		if strings.Contains(line, "====") {
 			continue
 		}
-
 		if !strings.HasPrefix(line, "|") || !strings.HasSuffix(line, "|") {
 			continue
 		}
@@ -389,7 +392,7 @@ func parseLGIOutput(lgiOutput string) (map[string][]string, bool) {
 				profileIDFirst = profileID
 			} else {
 				if profileIDFirst != profileID {
-					return gpuProfileIDsMap, false
+					return gpuProfileIDsMap, false, nil
 				}
 			}
 			gpuProfileIDsMap[gpuIndex] = append(gpuProfileIDsMap[gpuIndex], profileID)
@@ -400,14 +403,14 @@ func parseLGIOutput(lgiOutput string) (map[string][]string, bool) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return gpuProfileIDsMap, false
+		return gpuProfileIDsMap, false, err
 	}
 
 	if len(gpuProfileIDsMap) == 0 {
-		return gpuProfileIDsMap, false
+		return gpuProfileIDsMap, false, nil
 	}
 	glog.Infof("map: %v", gpuProfileIDsMap)
-	return gpuProfileIDsMap, true
+	return gpuProfileIDsMap, true, nil
 }
 
 func checkDesired(partitions map[string][]string, desiredMaxCount int) bool {

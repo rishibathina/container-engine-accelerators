@@ -159,7 +159,7 @@ func Test_parseLGIOutput(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotMap, gotUniform := parseLGIOutput(tt.lgiOutput)
+			gotMap, gotUniform, _ := parseLGIOutput(tt.lgiOutput)
 			if !reflect.DeepEqual(gotMap, tt.wantMap) {
 				t.Errorf("parseLGIOutput() gotMap = %v, want %v", gotMap, tt.wantMap)
 			}
