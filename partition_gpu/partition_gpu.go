@@ -347,9 +347,9 @@ func checkCurrentPartitionProfileCounts(desiredMaxCount int) bool {
 	}
 	glog.Infof("Output:\n %s", string(out))
 	outputText := string(out)
-	partitions, uniform, error := parseLGIOutput(outputText)
-	if error != nil {
-		glog.Errorf("failed to parse 'nvidia-smi mig -lgi' output: %v", error)
+	partitions, uniform, lgiError := parseLGIOutput(outputText)
+	if lgiError != nil {
+		glog.Errorf("failed to parse 'nvidia-smi mig -lgi' output: %v", lgiError)
 		return false
 	}
 	if !uniform {
