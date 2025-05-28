@@ -353,6 +353,7 @@ func checkCurrentPartitionProfileCounts(desiredMaxCount int) bool {
 		return false
 	}
 	if !uniform {
+		glog.Info("Partitions are not uniform, partition reconstruction needed.")
 		return uniform
 	}
 	desiredPartition := checkDesired(partitions, desiredMaxCount)
